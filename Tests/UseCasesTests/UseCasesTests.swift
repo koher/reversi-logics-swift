@@ -1,7 +1,7 @@
 import XCTest
 @testable import ReversiLogics
 
-final class ReversiLogicsTests: XCTestCase {
+final class UseCasesTests: XCTestCase {
     func testExample() {
     }
 

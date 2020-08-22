@@ -1,7 +1,7 @@
 import XCTest
 
-import ReversiLogicsTests
+import UseCasesTests
 
 var tests = [XCTestCaseEntry]()
-tests += ReversiLogicsTests.allTests()
+tests += UseCasesTests.allTests()
 XCTMain(tests)
