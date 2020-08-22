@@ -1,0 +1,5 @@
+# ReversiLogics
+
+## License
+
+[MIT](LICENSE)
