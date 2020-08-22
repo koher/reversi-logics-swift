@@ -23,6 +23,13 @@ public struct GamePresenter {
         }
     }
     
+    public func count(of side: Disk) -> Int {
+        switch gameManager.playingState {
+        case .placingDisks(side: _, from: let board): return board.count(of: side)
+        case _: return gameManager.game.board.count(of: side)
+        }
+    }
+    
     public func isPlayerActivityIndicatorVisible(of player: Player) -> Bool {
         guard case .waitingForPlayer(side: let side) = gameManager.playingState else { return false }
         switch (side, gameManager.darkPlayer, gameManager.lightPlayer) {

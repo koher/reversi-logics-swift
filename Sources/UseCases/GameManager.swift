@@ -30,7 +30,7 @@ public struct GameManager {
 extension GameManager {
     public enum PlayingState {
         case waitingForPlayer(side: Disk)
-        case placingDisks(side: Disk)
+        case placingDisks(side: Disk, from: Board)
         case passing(side: Disk)
         case over(winner: Disk?)
     }
@@ -44,12 +44,13 @@ extension GameManager {
             assertionFailure()
             return
         }
+        let before = game.board
         try game.placeDiskAt(x: x, y: y)
-        playingState = .placingDisks(side: side)
+        playingState = .placingDisks(side: side, from: before)
     }
     
     public mutating func completePlacingDisks() {
-        guard case .placingDisks(side: let side) = playingState else {
+        guard case .placingDisks(side: let side, _) = playingState else {
             assertionFailure()
             return
         }
