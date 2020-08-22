@@ -6,8 +6,8 @@ public struct GameManager {
     public var darkPlayer: Player
     public var lightPlayer: Player
     
-    private var playingState: PlayingState
-    private var resetState: ResetState
+    public private(set) var playingState: PlayingState
+    public private(set) var resetState: ResetState
     
     public init(game: Game, darkPlayer: Player, lightPlayer: Player) {
         self.game = game
@@ -21,7 +21,7 @@ public struct GameManager {
             self.playingState = .over(winner: winner)
         }
         
-        self.resetState = .notConforming
+        self.resetState = .notConfirming
     }
 }
 
@@ -88,7 +88,7 @@ extension GameManager {
 
 extension GameManager {
     public enum ResetState {
-        case notConforming
+        case notConfirming
         case confirming
     }
 }
