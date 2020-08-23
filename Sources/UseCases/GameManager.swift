@@ -110,7 +110,10 @@ extension GameManager {
             assertionFailure()
             return
         }
-        guard resets else { return }
+        guard resets else {
+            resetState = .notConfirming
+            return
+        }
         
         let newGame = Game(board: Board(width: game.board.width, height: game.board.height))
         self = GameManager(game: newGame, darkPlayer: .manual, lightPlayer: .manual)
