@@ -2,21 +2,21 @@ import UseCases
 import SwiftyReversi
 
 public struct GamePresenter {
-    public private(set) var gameManager: GameManager
+    public private(set) var manager: GameManager
     private var prevGame: Game
     
-    public init(gameManager: GameManager) {
-        self.gameManager = gameManager
-        self.prevGame = gameManager.game
+    public init(manager: GameManager) {
+        self.manager = manager
+        self.prevGame = manager.game
     }
 }
 
 // MARK: Output
 extension GamePresenter {
     public var message: Message {
-        switch gameManager.game.state {
+        switch manager.game.state {
         case .beingPlayed(turn: let side):
-            if case .passing(side: let side) = gameManager.playingState {
+            if case .passing(side: let side) = manager.playingState {
                 return .turn(side: side)
             } else {
                 return .turn(side: side)
@@ -26,25 +26,25 @@ extension GamePresenter {
     }
     
     public func count(of side: Disk) -> Int {
-        switch gameManager.playingState {
+        switch manager.playingState {
         case .placingDisks(side: _, from: let board): return board.count(of: side)
-        case _: return gameManager.game.board.count(of: side)
+        case _: return manager.game.board.count(of: side)
         }
     }
 
     public var darkPlayer: Player {
-        get { gameManager.darkPlayer }
-        set { gameManager.darkPlayer = newValue } // Input
+        get { manager.darkPlayer }
+        set { manager.darkPlayer = newValue } // Input
     }
     
     public var lightPlayer: Player {
-        get { gameManager.lightPlayer }
-        set { gameManager.lightPlayer = newValue } // Input
+        get { manager.lightPlayer }
+        set { manager.lightPlayer = newValue } // Input
     }
     
     public func isPlayerActivityIndicatorVisible(of side: Disk) -> Bool {
-        guard case .waitingForPlayer(side: let turn) = gameManager.playingState else { return false }
-        switch (side, turn, gameManager.darkPlayer, gameManager.lightPlayer) {
+        guard case .waitingForPlayer(side: let turn) = manager.playingState else { return false }
+        switch (side, turn, manager.darkPlayer, manager.lightPlayer) {
         case (.dark, .dark, .computer, _): return true
         case (.light, .light, _, .computer): return true
         case (_, _, _, _): return false
@@ -52,13 +52,13 @@ extension GamePresenter {
     }
     
     public var isPassingAlertVisible: Bool {
-        guard case .notConfirming = gameManager.resetState else { return false }
-        guard case .passing = gameManager.playingState else { return false }
+        guard case .notConfirming = manager.resetState else { return false }
+        guard case .passing = manager.playingState else { return false }
         return true
     }
     
     public var isResetAlertVisible: Bool {
-        guard  case .confirming = gameManager.resetState else { return false }
+        guard  case .confirming = manager.resetState else { return false }
         return true
     }
 }
@@ -67,19 +67,19 @@ extension GamePresenter {
 
 extension GamePresenter {
     public mutating func tryPlacingDiskAt(x: Int, y: Int) {
-        switch (gameManager.playingState, gameManager.darkPlayer, gameManager.lightPlayer) {
+        switch (manager.playingState, manager.darkPlayer, manager.lightPlayer) {
         case (.waitingForPlayer(side: .dark), .manual, _),
              (.waitingForPlayer(side: .light), _, .manual):
-            try? gameManager.placeDiskAt(x: x, y: y)
+            try? manager.placeDiskAt(x: x, y: y)
         case (_, _, _):
             break
         }
     }
     
-    public mutating func completePlacingDisks() { gameManager.completePlacingDisks() }
-    public mutating func completeConfirmationForPass() { gameManager.completeConfirmationForPass() }
-    public mutating func confirmToReset() { gameManager.confirmToReset() }
-    public mutating func completeConfirmationForReset(_ resets: Bool) { gameManager.completeConfirmationForReset(resets) }
+    public mutating func completePlacingDisks() { manager.completePlacingDisks() }
+    public mutating func completeConfirmationForPass() { manager.completeConfirmationForPass() }
+    public mutating func confirmToReset() { manager.confirmToReset() }
+    public mutating func completeConfirmationForReset(_ resets: Bool) { manager.completeConfirmationForReset(resets) }
 }
 
 // MARK: Message
