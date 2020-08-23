@@ -6,10 +6,9 @@ import PackageDescription
 let package = Package(
     name: "ReversiLogics",
     products: [
-        // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "ReversiLogics",
-            targets: ["UseCases", "Presenters"]),
+            targets: ["ReversiLogics"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -24,6 +23,9 @@ let package = Package(
         .target(
             name: "Presenters",
             dependencies: ["UseCases", "SwiftyReversi"]),
+        .target(
+            name: "ReversiLogics",
+            dependencies: ["Presenters", "UseCases", "SwiftyReversi"]),
         .testTarget(
             name: "UseCasesTests",
             dependencies: ["UseCases", "SwiftyReversi"]),
