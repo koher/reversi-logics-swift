@@ -30,12 +30,12 @@ public struct GamePresenter {
         }
     }
     
-    public func isPlayerActivityIndicatorVisible(of player: Player) -> Bool {
-        guard case .waitingForPlayer(side: let side) = gameManager.playingState else { return false }
-        switch (side, gameManager.darkPlayer, gameManager.lightPlayer) {
-        case (.dark, .computer, _): return true
-        case (.light, _, .computer): return true
-        case (_, _, _): return false
+    public func isPlayerActivityIndicatorVisible(of side: Disk) -> Bool {
+        guard case .waitingForPlayer(side: let turn) = gameManager.playingState else { return false }
+        switch (side, turn, gameManager.darkPlayer, gameManager.lightPlayer) {
+        case (.dark, .dark, .computer, _): return true
+        case (.light, .light, _, .computer): return true
+        case (_, _, _, _): return false
         }
     }
     
