@@ -66,7 +66,7 @@ extension GameManager {
         }
     }
     
-    public mutating func confirmPassing() {
+    public mutating func completeConfirmationForPass() {
         guard case .passing(side: let side) = playingState else {
             assertionFailure()
             return
@@ -97,8 +97,21 @@ extension GameManager {
 // MARK: Inputs - ResetState
 
 extension GameManager {
-    public mutating func confirmToReset(_ resets: Bool) {
+    public mutating func confirmToReset() {
+        guard case .notConfirming = resetState else {
+            assertionFailure()
+            return
+        }
+        resetState = .confirming
+    }
+    
+    public mutating func completeConfirmationForReset(_ resets: Bool) {
+        guard case .confirming = resetState else {
+            assertionFailure()
+            return
+        }
         guard resets else { return }
+        
         let newGame = Game(board: Board(width: game.board.width, height: game.board.height))
         self = GameManager(game: newGame, darkPlayer: .manual, lightPlayer: .manual)
     }

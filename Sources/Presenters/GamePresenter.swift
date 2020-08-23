@@ -9,9 +9,11 @@ public struct GamePresenter {
         self.gameManager = gameManager
         self.prevGame = gameManager.game
     }
-    
+}
+
+// MARK: Output
+extension GamePresenter {
     public var message: Message {
-        
         switch gameManager.game.state {
         case .beingPlayed(turn: let side):
             if case .passing(side: let side) = gameManager.playingState {
@@ -28,6 +30,16 @@ public struct GamePresenter {
         case .placingDisks(side: _, from: let board): return board.count(of: side)
         case _: return gameManager.game.board.count(of: side)
         }
+    }
+
+    public var darkPlayer: Player {
+        get { gameManager.darkPlayer }
+        set { gameManager.darkPlayer = newValue } // Input
+    }
+    
+    public var lightPlayer: Player {
+        get { gameManager.lightPlayer }
+        set { gameManager.lightPlayer = newValue } // Input
     }
     
     public func isPlayerActivityIndicatorVisible(of side: Disk) -> Bool {
@@ -49,6 +61,25 @@ public struct GamePresenter {
         guard  case .confirming = gameManager.resetState else { return false }
         return true
     }
+}
+
+// MARK: Input
+
+extension GamePresenter {
+    public mutating func tryPlacingDiskAt(x: Int, y: Int) {
+        switch (gameManager.playingState, gameManager.darkPlayer, gameManager.lightPlayer) {
+        case (.waitingForPlayer(side: .dark), .manual, _),
+             (.waitingForPlayer(side: .light), _, .manual):
+            try? gameManager.placeDiskAt(x: x, y: y)
+        case (_, _, _):
+            break
+        }
+    }
+    
+    public mutating func completePlacingDisks() { gameManager.completePlacingDisks() }
+    public mutating func completeConfirmationForPass() { gameManager.completeConfirmationForPass() }
+    public mutating func confirmToReset() { gameManager.confirmToReset() }
+    public mutating func completeConfirmationForReset(_ resets: Bool) { gameManager.completeConfirmationForReset(resets) }
 }
 
 // MARK: Message
