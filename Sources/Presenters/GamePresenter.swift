@@ -51,6 +51,11 @@ extension GamePresenter {
         }
     }
     
+    public var needsAnimatingBoardChanges: Bool {
+        if case .placingDisks(_, _) = manager.playingState { return true }
+        else { return false }
+    }
+    
     public var isPassingAlertVisible: Bool {
         guard case .notConfirming = manager.resetState else { return false }
         guard case .passing = manager.playingState else { return false }
