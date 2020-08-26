@@ -66,6 +66,19 @@ extension GamePresenter {
         guard  case .confirming = manager.resetState else { return false }
         return true
     }
+    
+    public var savedState: SavedState {
+        switch manager.game.state {
+        case .beingPlayed(turn: let turn as Disk?),
+             .over(winner: let turn):
+            return SavedState(
+                turn: turn,
+                darkPlayer: manager.darkPlayer,
+                lightPlayer: manager.lightPlayer,
+                board: manager.game.board
+            )
+        }
+    }
 }
 
 // MARK: Input
@@ -85,6 +98,15 @@ extension GamePresenter {
     public mutating func completeConfirmationForPass() { manager.completeConfirmationForPass() }
     public mutating func confirmToReset() { manager.confirmToReset() }
     public mutating func completeConfirmationForReset(_ resets: Bool) { manager.completeConfirmationForReset(resets) }
+    
+    public init(savedState: SavedState) {
+        let manager: GameManager = .init(
+            game: Game(board: savedState.board, turn: savedState.turn ?? .dark),
+            darkPlayer: savedState.darkPlayer,
+            lightPlayer: savedState.lightPlayer
+        )
+        self.init(manager: manager)
+    }
 }
 
 // MARK: Message
