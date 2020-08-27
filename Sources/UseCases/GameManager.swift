@@ -6,7 +6,7 @@ public struct GameManager {
     public var darkPlayer: Player
     public var lightPlayer: Player
     
-    public private(set) var playingState: PlayingState
+    public private(set) var playState: PlayState
     public private(set) var resetState: ResetState
     
     public init(game: Game, darkPlayer: Player, lightPlayer: Player) {
@@ -16,19 +16,19 @@ public struct GameManager {
         
         switch game.state {
         case .beingPlayed(turn: let side):
-            self.playingState = .waitingForPlayer(side: side)
+            self.playState = .waitingForPlayer(side: side)
         case .over(let winner):
-            self.playingState = .over(winner: winner)
+            self.playState = .over(winner: winner)
         }
         
         self.resetState = .notConfirming
     }
 }
 
-// MARK: PlayingState
+// MARK: PlayState
 
 extension GameManager {
-    public enum PlayingState {
+    public enum PlayState {
         case waitingForPlayer(side: Disk)
         case placingDisks(side: Disk, from: Board)
         case passing(side: Disk)
@@ -36,38 +36,47 @@ extension GameManager {
     }
 }
 
-// MARK: Inputs - PlayingState
+// MARK: ResetState
+
+extension GameManager {
+    public enum ResetState {
+        case notConfirming
+        case confirming
+    }
+}
+
+// MARK: Input
 
 extension GameManager {
     public mutating func placeDiskAt(x: Int, y: Int) throws {
-        guard case .waitingForPlayer(side: let side) = playingState else {
+        guard case .waitingForPlayer(side: let side) = playState else {
             assertionFailure()
             return
         }
         let before = game.board
         try game.placeDiskAt(x: x, y: y)
-        playingState = .placingDisks(side: side, from: before)
+        playState = .placingDisks(side: side, from: before)
     }
     
-    public mutating func completePlacingDisks() {
-        guard case .placingDisks(side: let side, _) = playingState else {
+    public mutating func completeFlippingDisks() {
+        guard case .placingDisks(side: let side, _) = playState else {
             assertionFailure()
             return
         }
         switch game.state {
         case .beingPlayed(turn: let newSide):
             if side == newSide {
-                playingState = .passing(side: side.flipped)
+                playState = .passing(side: side.flipped)
             } else {
-                playingState = .waitingForPlayer(side: newSide)
+                playState = .waitingForPlayer(side: newSide)
             }
         case .over(winner: let winner):
-            playingState = .over(winner: winner)
+            playState = .over(winner: winner)
         }
     }
     
-    public mutating func completeConfirmationForPass() {
-        guard case .passing(side: let side) = playingState else {
+    public mutating func pass() {
+        guard case .passing(side: let side) = playState else {
             assertionFailure()
             return
         }
@@ -81,22 +90,9 @@ extension GameManager {
             assertionFailure()
         }
         
-        playingState = .waitingForPlayer(side: newSide)
+        playState = .waitingForPlayer(side: newSide)
     }
-}
-
-// MARK: ResetState
-
-extension GameManager {
-    public enum ResetState {
-        case notConfirming
-        case confirming
-    }
-}
-
-// MARK: Inputs - ResetState
-
-extension GameManager {
+    
     public mutating func confirmToReset() {
         guard case .notConfirming = resetState else {
             assertionFailure()
@@ -105,7 +101,7 @@ extension GameManager {
         resetState = .confirming
     }
     
-    public mutating func completeConfirmationForReset(_ resets: Bool) {
+    public mutating func reset(_ resets: Bool) {
         guard case .confirming = resetState else {
             assertionFailure()
             return

@@ -3,11 +3,9 @@ import SwiftyReversi
 
 public struct GamePresenter {
     public private(set) var manager: GameManager
-    private var prevGame: Game
     
     public init(manager: GameManager) {
         self.manager = manager
-        self.prevGame = manager.game
     }
 }
 
@@ -16,7 +14,7 @@ extension GamePresenter {
     public var message: Message {
         switch manager.game.state {
         case .beingPlayed(turn: let side):
-            if case .passing(side: let side) = manager.playingState {
+            if case .passing(side: let side) = manager.playState {
                 return .turn(side: side)
             } else {
                 return .turn(side: side)
@@ -26,7 +24,7 @@ extension GamePresenter {
     }
     
     public func count(of side: Disk) -> Int {
-        switch manager.playingState {
+        switch manager.playState {
         case .placingDisks(side: _, from: let board): return board.count(of: side)
         case _: return manager.game.board.count(of: side)
         }
@@ -43,7 +41,7 @@ extension GamePresenter {
     }
     
     public func isPlayerActivityIndicatorVisible(of side: Disk) -> Bool {
-        guard case .waitingForPlayer(side: let turn) = manager.playingState else { return false }
+        guard case .waitingForPlayer(side: let turn) = manager.playState else { return false }
         switch (side, turn, manager.darkPlayer, manager.lightPlayer) {
         case (.dark, .dark, .computer, _): return true
         case (.light, .light, _, .computer): return true
@@ -52,13 +50,13 @@ extension GamePresenter {
     }
     
     public var needsAnimatingBoardChanges: Bool {
-        if case .placingDisks(_, _) = manager.playingState { return true }
+        if case .placingDisks(_, _) = manager.playState { return true }
         else { return false }
     }
     
     public var isPassingAlertVisible: Bool {
         guard case .notConfirming = manager.resetState else { return false }
-        guard case .passing = manager.playingState else { return false }
+        guard case .passing = manager.playState else { return false }
         return true
     }
     
@@ -68,7 +66,7 @@ extension GamePresenter {
     }
     
     public var boardForComputer: Board? {
-        switch (manager.playingState, manager.darkPlayer, manager.lightPlayer) {
+        switch (manager.playState, manager.darkPlayer, manager.lightPlayer) {
         case (.waitingForPlayer(side: .dark), .computer, _):
             return manager.game.board
         case (.waitingForPlayer(side: .light), _, .computer):
@@ -96,7 +94,7 @@ extension GamePresenter {
 
 extension GamePresenter {
     public mutating func tryPlacingDiskAt(x: Int, y: Int) {
-        switch (manager.playingState, manager.darkPlayer, manager.lightPlayer) {
+        switch (manager.playState, manager.darkPlayer, manager.lightPlayer) {
         case (.waitingForPlayer(side: .dark), .manual, _),
              (.waitingForPlayer(side: .light), _, .manual):
             try? manager.placeDiskAt(x: x, y: y)
@@ -112,10 +110,10 @@ extension GamePresenter {
             assertionFailure("\(error)")
         }
     }
-    public mutating func completePlacingDisks() { manager.completePlacingDisks() }
-    public mutating func completeConfirmationForPass() { manager.completeConfirmationForPass() }
+    public mutating func completeFlippingDisks() { manager.completeFlippingDisks() }
+    public mutating func pass() { manager.pass() }
     public mutating func confirmToReset() { manager.confirmToReset() }
-    public mutating func completeConfirmationForReset(_ resets: Bool) { manager.completeConfirmationForReset(resets) }
+    public mutating func reset(_ resets: Bool) { manager.reset(resets) }
     
     public init(savedState: SavedState) {
         let manager: GameManager = .init(
