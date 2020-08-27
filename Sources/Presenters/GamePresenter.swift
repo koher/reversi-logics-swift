@@ -105,8 +105,12 @@ extension GamePresenter {
         }
     }
     
-    public mutating func placeDiskAt(x: Int, y: Int) throws {
-        try manager.placeDiskAt(x: x, y: y)
+    public mutating func placeDiskAt(x: Int, y: Int) {
+        do {
+            try manager.placeDiskAt(x: x, y: y)
+        } catch {
+            assertionFailure("\(error)")
+        }
     }
     public mutating func completePlacingDisks() { manager.completePlacingDisks() }
     public mutating func completeConfirmationForPass() { manager.completeConfirmationForPass() }
