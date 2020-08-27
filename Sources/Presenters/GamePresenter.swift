@@ -67,6 +67,17 @@ extension GamePresenter {
         return true
     }
     
+    public var boardForComputer: Board? {
+        switch (manager.playingState, manager.darkPlayer, manager.lightPlayer) {
+        case (.waitingForPlayer(side: .dark), .computer, _):
+            return manager.game.board
+        case (.waitingForPlayer(side: .light), _, .computer):
+            return manager.game.board.flipped()
+        case (_, _, _):
+            return nil
+        }
+    }
+    
     public var savedState: SavedState {
         switch manager.game.state {
         case .beingPlayed(turn: let turn as Disk?),
