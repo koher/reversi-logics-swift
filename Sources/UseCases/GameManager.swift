@@ -59,16 +59,16 @@ extension GameManager {
     }
     
     public mutating func completeFlippingDisks() {
-        guard case .placingDisks(side: let side, _) = playState else {
+        guard case .placingDisks(side: _, _) = playState else {
             assertionFailure()
             return
         }
         switch game.state {
         case .beingPlayed(turn: let newSide):
-            if side == newSide {
-                playState = .passing(side: side.flipped)
-            } else {
+            if game.board.hasValidMoves(for: newSide) {
                 playState = .waitingForPlayer(side: newSide)
+            } else {
+                playState = .passing(side: newSide)
             }
         case .over(winner: let winner):
             playState = .over(winner: winner)
@@ -80,17 +80,13 @@ extension GameManager {
             assertionFailure()
             return
         }
-        let newSide = side.flipped
-
-        // assertions
-        switch game.state {
-        case .beingPlayed(turn: let side):
-            assert(newSide == side)
-        case .over:
+        
+        do {
+            try game.pass()
+            playState = .waitingForPlayer(side: side.flipped)
+        } catch {
             assertionFailure()
         }
-        
-        playState = .waitingForPlayer(side: newSide)
     }
     
     public mutating func confirmToReset() {

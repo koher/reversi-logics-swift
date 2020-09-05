@@ -12,7 +12,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "SwiftyReversi", url: "https://github.com/koher/swifty-reversi.git", from: "0.1.0"),
+        .package(name: "SwiftyReversi", url: "https://github.com/koher/swifty-reversi.git", from: "0.2.0-alpha"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
