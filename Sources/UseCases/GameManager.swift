@@ -59,7 +59,7 @@ extension GameManager {
             try game.placeDiskAt(x: x, y: y)
             playState = .placingDisks(side: side, from: before)
         } catch {
-            playState = .over(winner: side.flipped) // foul
+            assertionFailure("\(error)")
         }
     }
     
