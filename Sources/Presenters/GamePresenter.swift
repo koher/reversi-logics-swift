@@ -12,14 +12,13 @@ public struct GamePresenter {
 // MARK: Output
 extension GamePresenter {
     public var message: Message {
-        switch manager.game.state {
-        case .beingPlayed(turn: let side):
-            if case .passing(side: let side) = manager.playState {
-                return .turn(side: side)
-            } else {
-                return .turn(side: side)
-            }
-        case .over(winner: let winner): return .result(winner: winner)
+        switch manager.playState {
+        case .waitingForPlayer(side: let side),
+             .placingDisks(side: let side, from: _),
+             .passing(side: let side):
+            return .turn(side: side)
+        case .over(winner: let winner):
+            return .result(winner: winner)
         }
     }
     
