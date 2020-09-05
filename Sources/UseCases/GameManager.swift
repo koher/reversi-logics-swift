@@ -49,20 +49,14 @@ extension GameManager {
 
 extension GameManager {
     public mutating func placeDiskAt(x: Int, y: Int) throws {
-        guard case .waitingForPlayer(side: let side) = playState else {
-            assertionFailure()
-            return
-        }
+        guard case .waitingForPlayer(side: let side) = playState else { preconditionFailure() }
         let before = game.board
         try game.placeDiskAt(x: x, y: y)
         playState = .placingDisks(side: side, from: before)
     }
     
     public mutating func completeFlippingDisks() {
-        guard case .placingDisks(side: _, _) = playState else {
-            assertionFailure()
-            return
-        }
+        guard case .placingDisks(side: _, _) = playState else { preconditionFailure() }
         switch game.state {
         case .beingPlayed(turn: let newSide):
             if game.board.hasValidMoves(for: newSide) {
@@ -76,11 +70,7 @@ extension GameManager {
     }
     
     public mutating func pass() {
-        guard case .passing(side: let side) = playState else {
-            assertionFailure()
-            return
-        }
-        
+        guard case .passing(side: let side) = playState else { preconditionFailure() }
         do {
             try game.pass()
             playState = .waitingForPlayer(side: side.flipped)
@@ -90,18 +80,12 @@ extension GameManager {
     }
     
     public mutating func confirmToReset() {
-        guard case .notConfirming = resetState else {
-            assertionFailure()
-            return
-        }
+        guard case .notConfirming = resetState else { preconditionFailure() }
         resetState = .confirming
     }
     
     public mutating func reset(_ resets: Bool) {
-        guard case .confirming = resetState else {
-            assertionFailure()
-            return
-        }
+        guard case .confirming = resetState else { preconditionFailure() }
         guard resets else {
             resetState = .notConfirming
             return
