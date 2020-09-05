@@ -95,20 +95,19 @@ extension GamePresenter {
 extension GamePresenter {
     public mutating func tryPlacingDiskAt(x: Int, y: Int) {
         switch (manager.playState, manager.darkPlayer, manager.lightPlayer) {
-        case (.waitingForPlayer(side: .dark), .manual, _),
-             (.waitingForPlayer(side: .light), _, .manual):
-            try? manager.placeDiskAt(x: x, y: y)
+        case (.waitingForPlayer(side: .dark), .manual, _):
+            guard manager.game.board.canPlaceDisk(.dark, atX: x, y: y) else { return }
+            manager.placeDiskAt(x: x, y: y)
+        case (.waitingForPlayer(side: .light), _, .manual):
+            guard manager.game.board.canPlaceDisk(.light, atX: x, y: y) else { return }
+            manager.placeDiskAt(x: x, y: y)
         case (_, _, _):
             break
         }
     }
     
     public mutating func placeDiskAt(x: Int, y: Int) {
-        do {
-            try manager.placeDiskAt(x: x, y: y)
-        } catch {
-            assertionFailure("\(error)")
-        }
+        manager.placeDiskAt(x: x, y: y)
     }
     public mutating func completeFlippingDisks() { manager.completeFlippingDisks() }
     public mutating func pass() { manager.pass() }

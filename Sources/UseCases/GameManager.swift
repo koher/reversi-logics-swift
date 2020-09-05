@@ -48,11 +48,15 @@ extension GameManager {
 // MARK: Input
 
 extension GameManager {
-    public mutating func placeDiskAt(x: Int, y: Int) throws {
+    public mutating func placeDiskAt(x: Int, y: Int) {
         guard case .waitingForPlayer(side: let side) = playState else { preconditionFailure() }
         let before = game.board
-        try game.placeDiskAt(x: x, y: y)
-        playState = .placingDisks(side: side, from: before)
+        do {
+            try game.placeDiskAt(x: x, y: y)
+            playState = .placingDisks(side: side, from: before)
+        } catch {
+            playState = .over(winner: side.flipped) // foul
+        }
     }
     
     public mutating func completeFlippingDisks() {
