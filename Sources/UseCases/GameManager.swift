@@ -16,7 +16,11 @@ public struct GameManager {
         
         switch game.state {
         case .beingPlayed(turn: let side):
-            self.playState = .waitingForPlayer(side: side)
+            if game.board.hasValidMoves(for: side) {
+                self.playState = .waitingForPlayer(side: side)
+            } else {
+                self.playState = .passing(side: side)
+            }
         case .over(let winner):
             self.playState = .over(winner: winner)
         }
@@ -28,7 +32,7 @@ public struct GameManager {
 // MARK: PlayState
 
 extension GameManager {
-    public enum PlayState {
+    public enum PlayState: Equatable {
         case waitingForPlayer(side: Disk)
         case placingDisks(side: Disk, from: Board)
         case passing(side: Disk)
@@ -39,7 +43,7 @@ extension GameManager {
 // MARK: ResetState
 
 extension GameManager {
-    public enum ResetState {
+    public enum ResetState: Equatable {
         case notConfirming
         case confirming
     }
