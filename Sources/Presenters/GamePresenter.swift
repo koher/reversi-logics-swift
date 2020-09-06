@@ -14,7 +14,7 @@ extension GamePresenter {
     public var message: Message {
         switch manager.playState {
         case .waitingForPlayer(side: let side),
-             .placingDisks(side: let side, from: _),
+             .flippingDisks(side: let side, from: _),
              .passing(side: let side):
             return .turn(side: side)
         case .over(winner: let winner):
@@ -24,7 +24,7 @@ extension GamePresenter {
     
     public func count(of side: Disk) -> Int {
         switch manager.playState {
-        case .placingDisks(side: _, from: let board): return board.count(of: side)
+        case .flippingDisks(side: _, from: let board): return board.count(of: side)
         case _: return manager.game.board.count(of: side)
         }
     }
@@ -49,7 +49,7 @@ extension GamePresenter {
     }
     
     public var needsAnimatingBoardChanges: Bool {
-        if case .placingDisks(_, _) = manager.playState { return true }
+        if case .flippingDisks(_, _) = manager.playState { return true }
         else { return false }
     }
     

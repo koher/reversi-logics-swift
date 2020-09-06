@@ -34,7 +34,7 @@ public struct GameManager {
 extension GameManager {
     public enum PlayState: Equatable {
         case waitingForPlayer(side: Disk)
-        case placingDisks(side: Disk, from: Board)
+        case flippingDisks(side: Disk, from: Board)
         case passing(side: Disk)
         case over(winner: Disk?)
     }
@@ -57,14 +57,14 @@ extension GameManager {
         let before = game.board
         do {
             try game.placeDiskAt(x: x, y: y)
-            playState = .placingDisks(side: side, from: before)
+            playState = .flippingDisks(side: side, from: before)
         } catch {
             assertionFailure("\(error)")
         }
     }
     
     public mutating func completeFlippingDisks() {
-        guard case .placingDisks(side: _, _) = playState else { preconditionFailure() }
+        guard case .flippingDisks(side: _, _) = playState else { preconditionFailure() }
         switch game.state {
         case .beingPlayed(turn: let newSide):
             if game.board.hasValidMoves(for: newSide) {

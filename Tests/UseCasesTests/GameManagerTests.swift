@@ -13,7 +13,7 @@ final class GamaManagerTests: XCTestCase {
 
         manager.placeDiskAt(x: 0, y: 1)
         
-        XCTAssertEqual(manager.playState, .placingDisks(side: .dark, from: Board("""
+        XCTAssertEqual(manager.playState, .flippingDisks(side: .dark, from: Board("""
         ----
         -oxx
         -oxx
@@ -82,7 +82,7 @@ final class GamaManagerTests: XCTestCase {
         
         manager.placeDiskAt(x: 3, y: 0)
         
-        XCTAssertEqual(manager.playState, .placingDisks(side: .light, from: Board("""
+        XCTAssertEqual(manager.playState, .flippingDisks(side: .light, from: Board("""
         ----
         xxxx
         -oxx
@@ -111,7 +111,7 @@ final class GamaManagerTests: XCTestCase {
             
             manager.reset(false)
             
-            XCTAssertEqual(manager.playState, .placingDisks(side: .light, from: Board("""
+            XCTAssertEqual(manager.playState, .flippingDisks(side: .light, from: Board("""
             ----
             xxxx
             -oxx
